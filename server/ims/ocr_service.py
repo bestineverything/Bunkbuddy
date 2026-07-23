@@ -5,12 +5,17 @@ Node.js calls this via HTTP instead of spawning a new Python process each time.
 import base64
 import os
 import sys
+import warnings
+
+warnings.filterwarnings("ignore")
 
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
 os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["ONNX_RUNTIME_DEVICE"] = "cpu"
 
 try:
     from http.server import HTTPServer, BaseHTTPRequestHandler

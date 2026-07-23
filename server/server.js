@@ -35,7 +35,11 @@ ocrProc.stdout.on('data', d => {
   process.stdout.write('[OCR] ' + msg);
   if (msg.includes('Listening')) ocrReady = true;
 });
-ocrProc.stderr.on('data', d => process.stderr.write('[OCR-ERR] ' + d));
+ocrProc.stderr.on('data', d => {
+  const msg = d.toString();
+  if (msg.includes('GetGpuDevices') || msg.includes('device_discovery.cc')) return;
+  process.stderr.write('[OCR] ' + msg);
+});
 ocrProc.on('exit', code => { console.log(`[OCR] Service exited with code ${code}`); ocrReady = false; });
 // Cleanup OCR on exit
 process.on('exit', () => ocrProc.kill());
