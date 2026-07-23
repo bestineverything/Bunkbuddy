@@ -3,7 +3,15 @@ ddddocr CAPTCHA microservice - runs locally on port 5001
 Node.js calls this via HTTP instead of spawning a new Python process each time.
 """
 import base64
+import os
 import sys
+
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
 try:
     from http.server import HTTPServer, BaseHTTPRequestHandler
     import ddddocr
@@ -14,7 +22,7 @@ try:
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, format, *args):
-            pass  # Suppress default HTTP logs
+            pass
 
         def do_POST(self):
             length = int(self.headers.get('Content-Length', 0))

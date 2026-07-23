@@ -56,6 +56,11 @@ EXPOSE 3001
 
 # Use system Chromium installed above
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV OMP_NUM_THREADS=1
+ENV OPENBLAS_NUM_THREADS=1
+ENV MKL_NUM_THREADS=1
+ENV VECLIB_MAXIMUM_THREADS=1
+ENV NUMEXPR_NUM_THREADS=1
 
 # Start the server
 CMD ["node", "server/server.js"]
