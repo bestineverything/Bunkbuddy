@@ -16,7 +16,7 @@ class BrowserPoolManager {
         this.isInitializing = true;
         this.initPromise = (async () => {
             console.log('[BROWSER-POOL] Launching warm Puppeteer browser...');
-            this.browser = await puppeteer.launch({
+            const launchOpts = {
                 headless: "shell",
                 args: [
                     '--no-sandbox', 
@@ -34,7 +34,11 @@ class BrowserPoolManager {
                     '--disable-backgrounding-occluded-windows',
                     '--disable-renderer-backgrounding'
                 ]
-            });
+            };
+            if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+                launchOpts.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+            }
+            this.browser = await puppeteer.launch(launchOpts);
             this.browser.on('disconnected', () => { this.browser = null; });
             this.isInitializing = false;
             return this.browser;
