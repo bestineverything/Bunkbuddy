@@ -1,6 +1,5 @@
 # Render Dockerfile for BunkBuddy Server
-# Includes Node.js, Python, Chromium deps for Puppeteer, and ddddocr
-
+# Build context: repo root
 FROM node:20-slim
 
 # Install Python, pip, system deps, and Chromium
@@ -39,13 +38,13 @@ ENV PUPPETEER_SKIP_DOWNLOAD=1
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files from server subdirectory
+COPY server/package*.json ./
 
 # Install Node dependencies (skip Puppeteer Chrome download)
 RUN npm ci --only=production
 
-# Copy server code
+# Copy entire repo so all imports resolve (server/, experimental/, etc.)
 COPY . .
 
 # Install Python dependencies for OCR
@@ -59,4 +58,4 @@ EXPOSE 3001
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Start the server
-CMD ["node", "server.js"]
+CMD ["node", "server/server.js"]
