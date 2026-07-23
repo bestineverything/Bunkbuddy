@@ -27,6 +27,10 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     fonts-liberation \
     fonts-noto-color-emoji \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Tell Puppeteer to skip downloading Chrome during npm install
@@ -45,7 +49,8 @@ RUN npm ci --only=production
 COPY . .
 
 # Install Python dependencies for OCR
-RUN pip3 install --no-cache-dir ddddocr
+RUN python3 -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir ddddocr
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Expose port
 EXPOSE 3001
