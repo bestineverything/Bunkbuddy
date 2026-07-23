@@ -1,0 +1,105 @@
+{
+  "subjects": [
+    "MEICC405",
+    "MEMEC401",
+    "MEMEC402",
+    "MEMEC403",
+    "MEMEC404",
+    "VAPD0101"
+  ],
+  "legend": {
+    "MEICC405": "Control Systems",
+    "MEMEC401": "Theory of Machines",
+    "MEMEC402": "Manufacturing Processes II",
+    "MEMEC403": "Thermal Engineering II",
+    "MEMEC404": "Metrology and Statistical Quality Control",
+    "VAPD0101": "Sports-I",
+    "CR": "Class Rescheduled",
+    "CS": "Class suspended Officially",
+    "GH": "Gazetted Holiday",
+    "MB": "Mass Bunk",
+    "MS": "Mid Sem Exam",
+    "NA": "Timetable Not Allotted",
+    "NT": "Class Not Taken",
+    "OD": "Teacher on Official duty or attending some important official meeting",
+    "TL": "Teacher on Leave"
+  },
+  "summary": {
+    "totalClasses": [
+      "52",
+      "56",
+      "53",
+      "51",
+      "50",
+      "24"
+    ],
+    "totalAbsent": [
+      "7",
+      "0",
+      "10",
+      "4",
+      "10",
+      "3"
+    ],
+    "totalPresent": [
+      "45",
+      "56",
+      "43",
+      "47",
+      "40",
+      "21"
+    ],
+    "percentages": [
+      "86.54%",
+      "100.00%",
+      "81.13%",
+      "92.16%",
+      "80.00%",
+      "87.50%"
+    ]
+  },
+  "rebuiltAtt": [
+    {
+      "subject": "Control Systems (MEICC405)",
+      "attended": "45",
+      "absent": "7",
+      "total": "52",
+      "percentage": "86.54%"
+    },
+    {
+      "subject": "Theory of Machines (MEMEC401)",
+      "attended": "56",
+      "absent": "0",
+      "total": "56",
+      "percentage": "100.00%"
+    },
+    {
+      "subject": "Manufacturing Processes II (MEMEC402)",
+      "attended": "43",
+      "absent": "10",
+      "total": "53",
+      "percentage": "81.13%"
+    },
+    {
+      "subject": "Thermal Engineering II (MEMEC403)",
+      "attended": "47",
+      "absent": "4",
+      "total": "51",
+      "percentage": "92.16%"
+    },
+    {
+      "subject": "Metrology and Statistical Quality Control (MEMEC404)",
+      "attended": "40",
+      "absent": "10",
+      "total": "50",
+      "percentage": "80.00%"
+    },
+    {
+      "subject": "Sports-I (VAPD0101)",
+      "attended": "21",
+      "absent": "3",
+      "total": "24",
+      "percentage": "87.50%"
+    }
+  ]
+}

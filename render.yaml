@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: bunkbuddy-server
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    dockerfilePath: ./server/Dockerfile
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: PYTHON
+        value: python3
+    healthCheckPath: /api/health

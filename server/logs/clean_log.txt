@@ -1,0 +1,3 @@
+[BROWSER ERROR]: Failed to load resource: the server responded with a status of 401 (Unauthorized) | URL: http://localhost:3000/api/data?sessionId=mock_session_123 | Line: undefined
+
+Subject cards container HTML: <div class="empty-state" style="grid-column: 1/-1;">No Data!</div>

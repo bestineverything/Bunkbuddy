@@ -1,0 +1,106 @@
+{
+  "home": {
+    "profile": {
+      "name": "AMAN GULIANI",
+      "program": "B.Tech",
+      "cgpa": "N/A",
+      "semester": "N/A"
+    },
+    "summary": [
+      {
+        "subject": "Control Systems (MEICC405)",
+        "attended": "45",
+        "absent": "7",
+        "total": "52",
+        "percentage": "86.54%",
+        "statusText": "bunkable",
+        "statusNumber": 8
+      },
+      {
+        "subject": "Theory of Machines (MEMEC401)",
+        "attended": "56",
+        "absent": "0",
+        "total": "56",
+        "percentage": "100.00%",
+        "statusText": "bunkable",
+        "statusNumber": 18
+      },
+      {
+        "subject": "Manufacturing Processes II (MEMEC402)",
+        "attended": "43",
+        "absent": "10",
+        "total": "53",
+        "percentage": "81.13%",
+        "statusText": "bunkable",
+        "statusNumber": 4
+      },
+      {
+        "subject": "Thermal Engineering II (MEMEC403)",
+        "attended": "47",
+        "absent": "4",
+        "total": "51",
+        "percentage": "92.16%",
+        "statusText": "bunkable",
+        "statusNumber": 11
+      }
+    ]
+  },
+  "attendance": [
+    {
+      "subject": "Control Systems (MEICC405)",
+      "attended": "45",
+      "absent": "7",
+      "total": "52",
+      "percentage": "86.54%",
+      "statusText": "bunkable",
+      "statusNumber": 8
+    },
+    {
+      "subject": "Theory of Machines (MEMEC401)",
+      "attended": "56",
+      "absent": "0",
+      "total": "56",
+      "percentage": "100.00%",
+      "statusText": "bunkable",
+      "statusNumber": 18
+    },
+    {
+      "subject": "Manufacturing Processes II (MEMEC402)",
+      "attended": "43",
+      "absent": "10",
+      "total": "53",
+      "percentage": "81.13%",
+      "statusText": "bunkable",
+      "statusNumber": 4
+    },
+    {
+      "subject": "Thermal Engineering II (MEMEC403)",
+      "attended": "47",
+      "absent": "4",
+      "total": "51",
+      "percentage": "92.16%",
+      "statusText": "bunkable",
+      "statusNumber": 11
+    },
+    {
+      "subject": "Metrology and Statistical Quality Control (MEMEC404)",
+      "attended": "40",
+      "absent": "10",
+      "total": "50",
+      "percentage": "80.00%",
+      "statusText": "bunkable",
+      "statusNumber": 3
+    },
+    {
+      "subject": "Sports-I (VAPD0101)",
+      "attended": "21",
+      "absent": "3",
+      "total": "24",
+      "percentage": "87.50%",
+      "statusText": "bunkable",
+      "statusNumber": 4
+    }
+  ],
+  "resources": [],
+  "connect": []
+}
