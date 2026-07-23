@@ -21,7 +21,15 @@ const PORT = process.env.PORT || 3001;
 let ocrReady = false;
 const ocrServicePath = path.join(__dirname, 'ims', 'ocr_service.py');
 const pythonCmd = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
-const ocrProc = spawn(pythonCmd, [ocrServicePath], { stdio: ['ignore', 'pipe', 'pipe'] });
+const ocrEnv = {
+  ...process.env,
+  OMP_NUM_THREADS: '1',
+  OPENBLAS_NUM_THREADS: '1',
+  MKL_NUM_THREADS: '1',
+  VECLIB_MAXIMUM_THREADS: '1',
+  NUMEXPR_NUM_THREADS: '1'
+};
+const ocrProc = spawn(pythonCmd, [ocrServicePath], { stdio: ['ignore', 'pipe', 'pipe'], env: ocrEnv });
 ocrProc.stdout.on('data', d => {
   const msg = d.toString();
   process.stdout.write('[OCR] ' + msg);
