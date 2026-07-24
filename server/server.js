@@ -139,7 +139,7 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
     
     let history = null;
     try {
-        const studentProfile = await fetchStudentDetailedProfile(rollNumber);
+        const studentProfile = await fetchStudentDetailedProfile(rollNumber, null, result.browser);
         if (studentProfile && studentProfile.success) {
             history = studentProfile.history;
         }
