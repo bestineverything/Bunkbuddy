@@ -7,14 +7,10 @@ const MAX_ATTEMPTS = 3;
 export async function loginToIms(rollNumber, password) {
   let browser;
   try {
-    const launchOptions = {
+    browser = await puppeteer.launch({
       headless: "shell",
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage', '--window-position=-32000,-32000']
-    };
-    if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-      launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
-    }
-    browser = await puppeteer.launch(launchOptions);
+    });
 
     const page = await browser.newPage();
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
@@ -42,6 +38,7 @@ export async function loginToIms(rollNumber, password) {
     console.timeEnd("Step1_Goto");
 
     // Step 2: Click "Student Login" using an active retry instead of static delays
+    console.time("Step2_ClickLogin");
     let clickedLogin = false;
     for (let attempts = 0; attempts < 100; attempts++) {
       for (const frame of page.frames()) {
@@ -58,7 +55,10 @@ export async function loginToIms(rollNumber, password) {
       if (clickedLogin) break;
       await new Promise(r => setTimeout(r, 50));
     }
-    if (!clickedLogin) throw new Error('Could not find Student Login link on IMS homepage.');
+    if (!clickedLogin) {
+        console.timeEnd("Step2_ClickLogin");
+        throw new Error('Could not find Student Login link on IMS homepage.');
+    }
     console.timeEnd("Step2_ClickLogin");
 
     // Step 3: Find login frame with lightning fast polling
@@ -90,10 +90,16 @@ export async function loginToIms(rollNumber, password) {
         canvas.width = img.naturalWidth;
         canvas.height = img.naturalHeight;
         canvas.getContext('2d').drawImage(img, 0, 0);
-        return canvas.toDataURL('image/jpeg', 1.0).split(',')[1];
+        return canvas.toDataURL('image/png').split(',')[1];
       });
 
-      if (!captchaBase64) throw new Error('Captcha image not found in login frame.');
+      if (!captchaBase64) {
+          if (attempt === MAX_ATTEMPTS) {
+              console.timeEnd("Step4_AttemptLogin");
+              throw new Error('Captcha image not found in login frame.');
+          }
+          continue;
+      }
       const captchaBuffer = Buffer.from(captchaBase64, 'base64');
       const captchaText = await solveCaptcha(captchaBuffer);
       console.log(`[LOGIN] Captcha solved: ${captchaText}`);
@@ -132,6 +138,7 @@ export async function loginToIms(rollNumber, password) {
       if (!stillOnLogin) {
         // SUCCESS! We navigated away from login page
         console.log(`[LOGIN] ✅ Login successful on attempt ${attempt}!`);
+        console.timeEnd("Step4_AttemptLogin");
 
         // Extract cookies from browser and inject into an axios client for the scraper
         const cookies = await page.cookies('https://www.imsnsit.org');
@@ -172,6 +179,7 @@ export async function loginToIms(rollNumber, password) {
       // Still on login page → check if it's wrong credentials or wrong captcha
       if (alertMsg && (alertMsg.toLowerCase().includes('invalid') && !alertMsg.toLowerCase().includes('security'))) {
         // Explicit "Invalid roll number or password" from server
+        console.timeEnd("Step4_AttemptLogin");
         await browser.close();
         throw new Error('Invalid roll number or password.');
       }
@@ -187,6 +195,7 @@ export async function loginToIms(rollNumber, password) {
     }
 
     // Exhausted all attempts
+    console.timeEnd("Step4_AttemptLogin");
     await browser.close();
     throw new Error('Invalid roll number or password.');
 

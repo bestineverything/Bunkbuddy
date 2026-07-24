@@ -245,7 +245,7 @@ export async function pooledLoginAndScrape(rollNumber, password, year, semester,
                     const c = document.createElement('canvas');
                     c.width = img.naturalWidth; c.height = img.naturalHeight;
                     c.getContext('2d').drawImage(img, 0, 0);
-                    return c.toDataURL('image/jpeg', 1.0).split(',')[1];
+                     return c.toDataURL('image/png').split(',')[1];
                 });
             }, 3000, 20);
             if (!captchaBase64) throw new Error('Captcha image not found.');
@@ -264,15 +264,18 @@ export async function pooledLoginAndScrape(rollNumber, password, year, semester,
             }, rollNumber, password, captchaText);
 
             let alertMsg = null;
-            page.once('dialog', async (dialog) => { alertMsg = dialog.message(); await dialog.accept(); });
+            const dialogHandler = async (dialog) => {
+                alertMsg = dialog.message();
+                console.log(`[FAST-SCRAPE] Alert: ${alertMsg}`);
+                await dialog.accept();
+            };
+            page.once('dialog', dialogHandler);
 
             const navPromise = page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 4000 }).catch(() => null);
             await loginFrame.click('input[name="login"]');
-            await Promise.race([navPromise, new Promise(r => setTimeout(r, 400))]);
+            const navResult = await Promise.race([navPromise, new Promise(r => setTimeout(r, 600))]);
 
-            const stillOnLogin = await loginFrame.evaluate(() => !!document.querySelector('input[name="uid"]')).catch(() => false);
-
-            if (!stillOnLogin) {
+            if (navResult) {
                 console.log(`[FAST-SCRAPE] [${el()}] ✅ Authenticated!`);
 
                 const cookies = await context.cookies();
@@ -284,7 +287,6 @@ export async function pooledLoginAndScrape(rollNumber, password, year, semester,
                     return jar;
                 }).catch(() => null);
 
-                // ── STEP 5: Fire ResultHub Puppeteer + Live Attendance Scrape concurrently ──
                 const resultHubPromise = fetchStudentDetailedProfile(rollNumber, null, browser).catch(e => {
                     console.warn(`[FAST-SCRAPE] ResultHub error: ${e.message}`);
                     return { success: false, history: null };
