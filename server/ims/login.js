@@ -86,10 +86,14 @@ export async function loginToIms(rollNumber, password) {
       const captchaBase64 = await loginFrame.evaluate(() => {
         const img = document.querySelector('#captchaimg') || document.querySelector('img[src*="captcha"]');
         if (!img || !img.naturalWidth) return null;
+        const scale = 2;
         const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        canvas.getContext('2d').drawImage(img, 0, 0);
+        canvas.width = img.naturalWidth * scale;
+        canvas.height = img.naturalHeight * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         return canvas.toDataURL('image/png').split(',')[1];
       });
 

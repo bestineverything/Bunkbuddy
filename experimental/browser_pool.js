@@ -238,15 +238,20 @@ export async function pooledLoginAndScrape(rollNumber, password, year, semester,
 
         // ── STEP 4: Solve CAPTCHA & Authenticate ──
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-            const captchaBase64 = await pollFor(async () => {
-                return await loginFrame.evaluate(() => {
-                    const img = document.querySelector('#captchaimg') || document.querySelector('img[src*="captcha"]');
-                    if (!img || !img.naturalWidth) return null;
-                    const c = document.createElement('canvas');
-                    c.width = img.naturalWidth; c.height = img.naturalHeight;
-                    c.getContext('2d').drawImage(img, 0, 0);
-                     return c.toDataURL('image/png').split(',')[1];
-                });
+                     const captchaBase64 = await pollFor(async () => {
+                     return await loginFrame.evaluate(() => {
+                         const img = document.querySelector('#captchaimg') || document.querySelector('img[src*="captcha"]');
+                         if (!img || !img.naturalWidth) return null;
+                         const scale = 2;
+                         const canvas = document.createElement('canvas');
+                         canvas.width = img.naturalWidth * scale;
+                         canvas.height = img.naturalHeight * scale;
+                         const ctx = canvas.getContext('2d');
+                         ctx.imageSmoothingEnabled = true;
+                         ctx.imageSmoothingQuality = 'high';
+                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                         return canvas.toDataURL('image/png').split(',')[1];
+                     });
             }, 3000, 20);
             if (!captchaBase64) throw new Error('Captcha image not found.');
 
