@@ -474,7 +474,8 @@ CHECKING RAM: 640KB OK...</div>
         setTimeout(() => { resizeCanvas(); animate(); }, 100);
 
     </script>
-    <script>window.BB_API_BASE = "%BB_API_BASE%";</script>
+    <script src="js/config.js"></script>
+    <script>window.BB_API_BASE = window.BB_API_BASE || 'https://bunkbuddy-617z.onrender.com';</script>
     <script type="module" src="js/login.js?v=3"></script>
 
 </body>
