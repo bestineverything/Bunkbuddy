@@ -21,7 +21,7 @@ const include = [
   '404.html',
   '_redirects',
   'netlify.toml',
-  'favicon.ico',
+  'favicon.svg',
   'css',
   'js',
   'pages',
