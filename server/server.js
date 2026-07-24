@@ -21,15 +21,7 @@ const PORT = process.env.PORT || 3001;
 let ocrReady = false;
 const ocrServicePath = path.join(__dirname, 'ims', 'ocr_service.py');
 const pythonCmd = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
-const ocrEnv = {
-  ...process.env,
-  OMP_NUM_THREADS: '1',
-  OPENBLAS_NUM_THREADS: '1',
-  MKL_NUM_THREADS: '1',
-  VECLIB_MAXIMUM_THREADS: '1',
-  NUMEXPR_NUM_THREADS: '1'
-};
-const ocrProc = spawn(pythonCmd, [ocrServicePath], { stdio: ['ignore', 'pipe', 'pipe'], env: ocrEnv });
+const ocrProc = spawn(pythonCmd, [ocrServicePath], { stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
 ocrProc.stdout.on('data', d => {
   const msg = d.toString();
   process.stdout.write('[OCR] ' + msg);
@@ -41,25 +33,15 @@ ocrProc.stderr.on('data', d => {
   process.stderr.write('[OCR] ' + msg);
 });
 ocrProc.on('exit', code => { console.log(`[OCR] Service exited with code ${code}`); ocrReady = false; });
+ocrProc.on('error', err => { console.error('[OCR] Failed to start:', err.message); ocrReady = false; });
 // Cleanup OCR on exit
 process.on('exit', () => ocrProc.kill());
 process.on('SIGINT', () => { ocrProc.kill(); process.exit(); });
 // ────────────────────────────────────────────────────────────────────────────
 
 const app = express();
-app.use(cors({ origin: '*', methods: ['GET','POST','OPTIONS'], allowedHeaders: ['Content-Type','Authorization'] }));
+app.use(cors());
 app.use(express.json({ limit: '2mb' }));
-app.use(express.urlencoded({ extended: true }));
-
-// Request logging for debugging
-app.use((req, res, next) => {
-  const start = Date.now();
-  res.on('finish', () => {
-    const ms = Date.now() - start;
-    console.log(`[HTTP] ${req.method} ${req.originalUrl || req.url} → ${res.statusCode} (${ms}ms)`);
-  });
-  next();
-});
 
 // Apply security rate limits for strict server protection
 const loginLimiter = rateLimit({
@@ -87,10 +69,6 @@ function saveHolidays() {
 // ────────────────────────────────────────────────────────────────────────────
 
 app.use(express.static(ROOT));
-
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', ocr: ocrReady, timestamp: new Date().toISOString() });
-});
 
 app.post('/api/auth/login', loginLimiter, async (req, res) => {
   const { rollNumber, password, year, semester } = req.body;
