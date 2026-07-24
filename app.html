@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BunkBuddy</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="css/app.css">
   <link rel="stylesheet" href="css/app-extra.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -341,8 +340,6 @@
     </div>
   </footer>
 
-  <script src="js/config.js"></script>
-  <script>window.BB_API_BASE = window.BB_API_BASE || 'https://bunkbuddy-617z.onrender.com';</script>
   <script type="module" src="js/app.js?v=7"></script>
   <script type="module" src="js/calendar.js?v=4"></script>
   <script type="module" src="js/resulthub.js?v=4"></script>
@@ -350,6 +347,16 @@
 
   <!-- Dynamic Page Loader -->
   <script>
+    function showPageLoading() {
+      const panels = document.querySelectorAll('.page-panel');
+      panels.forEach(p => {
+        if (!p.innerHTML.trim()) {
+          p.innerHTML = `<div style="padding:40px;text-align:center;color:var(--text-secondary);"><i class="ph ph-spinner ph-spin" style="font-size:2rem;"></i><p style="margin-top:10px;">Loading...</p></div>`;
+        }
+      });
+    }
+    showPageLoading();
+
     async function loadPages() {
       const pages = ['home', 'academics', 'resources', 'attendance', 'connect', 'resultHub', 'pro'];
       for (const page of pages) {

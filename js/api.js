@@ -1,25 +1,27 @@
-const API_BASE = window.BB_API_BASE || '';
-
-console.log('[API] BB_API_BASE =', window.BB_API_BASE);
-console.log('[API] API_BASE =', API_BASE);
-console.log('[API] hostname =', window.location.hostname);
-console.log('[API] origin =', window.location.origin);
+const API_BASE = window.location.port === '3000' || window.location.hostname === 'localhost'
+  ? ''
+  : '';
 
 export async function login(rollNumber, password, year, semester) {
-  const url = `${API_BASE}/api/auth/login`;
-  console.log('[API] POST', url, { rollNumber, year, semester });
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ rollNumber, password, year, semester }),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 120000);
 
-  const data = await res.json();
-  console.log('[API] login response', res.status, data);
-  if (!res.ok && !data.needsCaptcha) {
-    throw new Error(data.message || 'Login failed');
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rollNumber, password, year, semester }),
+      signal: controller.signal,
+    });
+
+    const data = await res.json();
+    if (!res.ok && !data.needsCaptcha) {
+      throw new Error(data.message || 'Login failed');
+    }
+    return data;
+  } finally {
+    clearTimeout(timeout);
   }
-  return data;
 }
 
 export async function refreshData(sessionId, year, semester) {
@@ -41,11 +43,16 @@ export async function refreshCaptcha(pendingId) {
 }
 
 export function saveSession(sessionId, rollNumber, data, history = null) {
-  localStorage.setItem('bb_session', sessionId);
-  localStorage.setItem('bb_roll', rollNumber);
-  localStorage.setItem('bb_data', JSON.stringify(data));
-  if (history) {
-    localStorage.setItem('bb_academic_history_v2', JSON.stringify(history));
+  try {
+    localStorage.setItem('bb_session', sessionId);
+    localStorage.setItem('bb_roll', rollNumber);
+    const serialized = JSON.stringify(data);
+    localStorage.setItem('bb_data', serialized);
+    if (history) {
+      localStorage.setItem('bb_academic_history_v2', JSON.stringify(history));
+    }
+  } catch (e) {
+    console.error('Failed to save session to localStorage:', e);
   }
 }
 

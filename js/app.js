@@ -100,15 +100,15 @@ function renderHome() {
     if (name && name !== rollNumber) {
         name = name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
     }
-    document.getElementById('homeGreeting').innerHTML = `Welcome, <span style='font-weight: normal; margin-left: 8px;'>${name}</span>`;
-    document.getElementById('homeSub').textContent = `Roll ${rollNumber}`;
+    const homeGreeting = document.getElementById('homeGreeting');
+    if (homeGreeting) homeGreeting.innerHTML = `Welcome, <span style='font-weight: normal; margin-left: 8px;'>${name}</span>`;
+    const homeSub = document.getElementById('homeSub');
+    if (homeSub) homeSub.textContent = `Roll ${rollNumber}`;
 
     const semInput = document.getElementById('dashSemInput');
     const yrInput = document.getElementById('dashYearInput');
     if (semInput) semInput.value = localStorage.getItem('bb_semester') || '1';
     if (yrInput) yrInput.value = localStorage.getItem('bb_year') || '2026-27';
-
-
 
     const refreshBtn = document.getElementById('refreshAttendanceBtn');
     if (refreshBtn) {
@@ -651,16 +651,23 @@ function setupCloudMascot() {
 }
 
 function initializeApp() {
-    renderHome();
-    renderAttendance();
-    renderLinks('resourcesList', window.data ? window.data.resources : [], 'No resource links found on IMS.');
-    renderLinks('connectList', window.data ? window.data.connect : [], 'No connect links found on IMS.');
-    setupNav();
-    setupTheme();
-    setupEtherealShadows();
-    setupCloudMascot();
-    loadAcademics();
+    try {
+        renderHome();
+        renderAttendance();
+        renderLinks('resourcesList', window.data ? window.data.resources : [], 'No resource links found on IMS.');
+        renderLinks('connectList', window.data ? window.data.connect : [], 'No connect links found on IMS.');
+        setupNav();
+        setupTheme();
+        setupEtherealShadows();
+        setupCloudMascot();
+        loadAcademics();
+    } catch (e) {
+        console.error('[APP] Initialization error:', e);
+    }
+    setupAttendanceSync();
+}
 
+function setupAttendanceSync() {
     const attendanceSyncBtn = document.getElementById('attendanceSyncBtn');
     const syncProgressContainer = document.getElementById('syncProgressContainer');
     const syncProgressBar = document.getElementById('syncProgressBar');
@@ -712,3 +719,7 @@ if (window.__bb_pagesLoaded) {
 } else {
     document.addEventListener('pagesLoaded', initializeApp);
 }
+
+window.addEventListener('error', (e) => {
+    console.error('[APP] Global error:', e.message);
+});
