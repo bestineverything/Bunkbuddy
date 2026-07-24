@@ -56,6 +56,7 @@ async function handleLogin() {
   loginBtn.disabled = true;
   overlay.classList.add('active');
   clearTerminal();
+  console.log('[LOGIN] Starting login flow', { rollNumber, year, semester });
   
   try {
     typeLine(`[SYS] AUTHENTICATING ${rollNumber}...`);
@@ -76,7 +77,9 @@ async function handleLogin() {
       setTimeout(() => { if (!cancelled) typeLine(text); }, delay)
     );
 
+    console.log('[LOGIN] Calling login API...');
     const result = await login(rollNumber, password, year, semester);
+    console.log('[LOGIN] API result', result);
     cancelled = true;
     timers.forEach(clearTimeout);
 

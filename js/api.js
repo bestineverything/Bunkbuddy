@@ -2,14 +2,22 @@ const API_BASE = window.BB_API_BASE || (window.location.port === '3000' || windo
   ? ''
   : '');
 
+console.log('[API] BB_API_BASE =', window.BB_API_BASE);
+console.log('[API] API_BASE =', API_BASE);
+console.log('[API] hostname =', window.location.hostname);
+console.log('[API] origin =', window.location.origin);
+
 export async function login(rollNumber, password, year, semester) {
-  const res = await fetch(`${API_BASE}/api/auth/login`, {
+  const url = `${API_BASE}/api/auth/login`;
+  console.log('[API] POST', url, { rollNumber, year, semester });
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ rollNumber, password, year, semester }),
   });
 
   const data = await res.json();
+  console.log('[API] login response', res.status, data);
   if (!res.ok && !data.needsCaptcha) {
     throw new Error(data.message || 'Login failed');
   }
