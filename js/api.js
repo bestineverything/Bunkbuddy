@@ -1,6 +1,4 @@
-const API_BASE = window.BB_API_BASE || (window.location.port === '3000' || window.location.hostname === 'localhost'
-  ? ''
-  : '');
+const API_BASE = window.BB_API_BASE || '';
 
 console.log('[API] BB_API_BASE =', window.BB_API_BASE);
 console.log('[API] API_BASE =', API_BASE);

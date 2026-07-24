@@ -118,11 +118,28 @@ async function handleLogin() {
   }
 }
 
-loginBtn?.addEventListener('click', () => handleLogin());
+// Global error handler
+window.addEventListener('error', (e) => {
+  console.error('[GLOBAL] Error', e.message, 'at', e.filename, ':', e.lineno);
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('[GLOBAL] Unhandled rejection', e.reason);
+});
+
+loginBtn?.addEventListener('click', () => {
+  console.log('[LOGIN] Button clicked');
+  handleLogin();
+});
 
 passInput?.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') handleLogin();
+  if (e.key === 'Enter') {
+    console.log('[LOGIN] Enter key pressed');
+    handleLogin();
+  }
 });
+
+console.log('[LOGIN] Script loaded, button found:', !!loginBtn);
 
 // Setup auto-login functionality if credentials exist
 const session = getSession();
