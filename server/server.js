@@ -47,8 +47,19 @@ process.on('SIGINT', () => { ocrProc.kill(); process.exit(); });
 // ────────────────────────────────────────────────────────────────────────────
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: '*', methods: ['GET','POST','OPTIONS'], allowedHeaders: ['Content-Type','Authorization'] }));
 app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// Request logging for debugging
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const ms = Date.now() - start;
+    console.log(`[HTTP] ${req.method} ${req.originalUrl || req.url} → ${res.statusCode} (${ms}ms)`);
+  });
+  next();
+});
 
 // Apply security rate limits for strict server protection
 const loginLimiter = rateLimit({
