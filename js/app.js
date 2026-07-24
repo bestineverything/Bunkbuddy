@@ -181,16 +181,7 @@ function renderHome() {
         }
     }
 
-    // Generate fake notices for Demo
-    const ticker = document.getElementById('noticesTicker');
-    if (ticker) {
-        ticker.innerHTML = `
-        <div class="ticker-item">Notice regarding mid-sem practicals starting next week.</div>
-        <div class="ticker-item">Circular: Ensure 75% attendance to avoid debarment.</div>
-        <div class="ticker-item">Fee submission deadline extended.</div>
-      `;
     }
-}
 
 function renderAttendance() {
     const detailed = data.detailedAttendance;
