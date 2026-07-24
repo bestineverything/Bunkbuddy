@@ -265,7 +265,15 @@ export async function pooledLoginAndScrape(rollNumber, password, year, semester,
                                  if (el.src && el.src.toLowerCase().includes('security')) { img = el; break; }
                              }
                          }
-                         if (!img || !img.naturalWidth) return null;
+                         if (!img) return null;
+
+                         // Try to get image directly from src if it's a data URL
+                         if (img.src && img.src.startsWith('data:image')) {
+                             return img.src.split(',')[1];
+                         }
+
+                         // Fallback to canvas extraction
+                         if (!img.naturalWidth) return null;
                          const scale = 2;
                          const canvas = document.createElement('canvas');
                          canvas.width = img.naturalWidth * scale;
