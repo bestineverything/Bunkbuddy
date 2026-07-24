@@ -240,7 +240,31 @@ export async function pooledLoginAndScrape(rollNumber, password, year, semester,
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
                      const captchaBase64 = await pollFor(async () => {
                      return await loginFrame.evaluate(() => {
-                         const img = document.querySelector('#captchaimg') || document.querySelector('img[src*="captcha"]');
+                         const selectors = [
+                             '#captchaimg',
+                             'img[src*="captcha"]',
+                             'img[src*="Captcha"]',
+                             'img[alt*="captcha"]',
+                             'img[title*="captcha"]',
+                             '.captcha img',
+                             '#captcha img',
+                             'img[src*="captchaimg"]',
+                             'img[src*="checkcode"]',
+                             'img[src*="security"]'
+                         ];
+                         let img = null;
+                         for (const sel of selectors) {
+                             img = document.querySelector(sel);
+                             if (img) break;
+                         }
+                         if (!img) {
+                             const allImgs = document.querySelectorAll('img');
+                             for (const el of allImgs) {
+                                 if (el.src && el.src.toLowerCase().includes('captcha')) { img = el; break; }
+                                 if (el.src && el.src.toLowerCase().includes('checkcode')) { img = el; break; }
+                                 if (el.src && el.src.toLowerCase().includes('security')) { img = el; break; }
+                             }
+                         }
                          if (!img || !img.naturalWidth) return null;
                          const scale = 2;
                          const canvas = document.createElement('canvas');
@@ -252,7 +276,7 @@ export async function pooledLoginAndScrape(rollNumber, password, year, semester,
                          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                          return canvas.toDataURL('image/png').split(',')[1];
                      });
-            }, 3000, 20);
+             }, 8000, 50);
             if (!captchaBase64) throw new Error('Captcha image not found.');
 
             const captchaText = await solveCaptchaThreaded(Buffer.from(captchaBase64, 'base64'));

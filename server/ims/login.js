@@ -84,7 +84,31 @@ export async function loginToIms(rollNumber, password) {
 
       // Extract captcha directly from browser canvas (the EXACT image displayed)
       const captchaBase64 = await loginFrame.evaluate(() => {
-        const img = document.querySelector('#captchaimg') || document.querySelector('img[src*="captcha"]');
+        const selectors = [
+            '#captchaimg',
+            'img[src*="captcha"]',
+            'img[src*="Captcha"]',
+            'img[alt*="captcha"]',
+            'img[title*="captcha"]',
+            '.captcha img',
+            '#captcha img',
+            'img[src*="captchaimg"]',
+            'img[src*="checkcode"]',
+            'img[src*="security"]'
+        ];
+        let img = null;
+        for (const sel of selectors) {
+            img = document.querySelector(sel);
+            if (img) break;
+        }
+        if (!img) {
+            const allImgs = document.querySelectorAll('img');
+            for (const el of allImgs) {
+                if (el.src && el.src.toLowerCase().includes('captcha')) { img = el; break; }
+                if (el.src && el.src.toLowerCase().includes('checkcode')) { img = el; break; }
+                if (el.src && el.src.toLowerCase().includes('security')) { img = el; break; }
+            }
+        }
         if (!img || !img.naturalWidth) return null;
         const scale = 2;
         const canvas = document.createElement('canvas');
