@@ -238,17 +238,28 @@ export async function pooledLoginAndScrape(rollNumber, password, year, semester,
 
         // ── STEP 4: Solve CAPTCHA & Authenticate ──
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-            const captchaBase64 = await pollFor(async () => {
-                return await loginFrame.evaluate(() => {
+            let captchaBase64 = null;
+            try {
+                captchaBase64 = await loginFrame.evaluate(() => {
                     const img = document.querySelector('#captchaimg') || document.querySelector('img[src*="captcha"]');
                     if (!img || !img.naturalWidth) return null;
                     const c = document.createElement('canvas');
                     c.width = img.naturalWidth; c.height = img.naturalHeight;
                     c.getContext('2d').drawImage(img, 0, 0);
-                    return c.toDataURL('image/png').split(',')[1];
+                    return c.toDataURL('image/jpeg', 1.0).split(',')[1];
                 });
-            }, 3000, 20);
-            if (!captchaBase64) throw new Error('Captcha image not found.');
+            } catch (evalErr) {
+                console.warn(`[FAST-SCRAPE] Captcha detection error: ${evalErr.message}`);
+            }
+
+            if (!captchaBase64) {
+                if (attempt < maxAttempts) {
+                    console.log(`[FAST-SCRAPE] [${el()}] CAPTCHA image not loaded, retrying...`);
+                    await new Promise(r => setTimeout(r, 500));
+                    continue;
+                }
+                throw new Error('Captcha image not found in login frame.');
+            }
 
             const captchaText = await solveCaptchaThreaded(Buffer.from(captchaBase64, 'base64'));
             console.log(`[FAST-SCRAPE] [${el()}] CAPTCHA: ${captchaText}`);
